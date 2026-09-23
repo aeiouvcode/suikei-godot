@@ -1,0 +1,10 @@
+[
+  {"id": "kokeiwa", "kanji": "苔岩の淵", "name": "Mossback Pool", "seed": 11, "depth": 1.5, "half_w": 5.2, "goal": 3,
+   "species": {"yamame": 1.0, "oikawa": 1.4, "kawamutsu": 1.0}, "fish": 9, "sun": [-52, 28], "absorb": [1.3, 0.24, 0.3], "scatter": [0.01, 0.2, 0.19], "rocks": 9},
+  {"id": "hisui", "kanji": "翡翠の瀬", "name": "Jade Run", "seed": 23, "depth": 1.2, "half_w": 6.0, "goal": 3,
+   "species": {"ayu": 1.3, "ugui": 1.0, "oikawa": 0.8, "yamame": 0.5}, "fish": 10, "sun": [-60, -20], "absorb": [0.9, 0.13, 0.2], "scatter": [0.03, 0.37, 0.33], "rocks": 12},
+  {"id": "sugikage", "kanji": "杉影の淵", "name": "Cedar Shade Pool", "seed": 37, "depth": 1.9, "half_w": 4.8, "goal": 3,
+   "species": {"amago": 1.0, "yamame": 0.8, "iwana": 0.7}, "fish": 9, "sun": [-40, 55], "absorb": [1.0, 0.2, 0.22], "scatter": [0.02, 0.28, 0.28], "rocks": 10},
+  {"id": "genryu", "kanji": "源流の大淵", "name": "Headwater Great Pool", "seed": 53, "depth": 2.3, "half_w": 5.5, "goal": 3,
+   "species": {"iwana": 1.2, "amago": 0.6, "nushi": 0.18}, "fish": 9, "sun": [-48, -40], "absorb": [1.0, 0.18, 0.2], "scatter": [0.02, 0.3, 0.31], "rocks": 11}
+]
