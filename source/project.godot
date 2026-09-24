@@ -37,6 +37,10 @@ g_water_y={
 "type": "float",
 "value": 0.0
 }
+g_sun_dir={
+"type": "vec3",
+"value": Vector3(0.3, 0.8, 0.5)
+}
 g_absorb={
 "type": "vec3",
 "value": Vector3(0.95, 0.16, 0.21)
