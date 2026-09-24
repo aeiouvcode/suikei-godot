@@ -333,39 +333,46 @@ func _build_trees() -> void:
 		add_child(mi)
 
 func _bush_mesh() -> ArrayMesh:
-	var sm := SphereMesh.new()
-	sm.radius = 1.0
-	sm.height = 2.0
-	sm.radial_segments = 10
-	sm.rings = 6
-	var arr := sm.get_mesh_arrays()
-	var verts: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	# several leafy lobes per shrub instead of one smooth blob
 	var n := FastNoiseLite.new()
-	n.frequency = 1.3
-	for i in verts.size():
-		var v := verts[i]
-		v *= 1.0 + n.get_noise_3dv(v * 2.0) * 0.45
-		if v.y < 0.0:
-			v.y *= 0.3
-		verts[i] = v
-	var cols := PackedColorArray()
-	cols.resize(verts.size())
-	cols.fill(Color(0, 1, 0))
-	arr[Mesh.ARRAY_VERTEX] = verts
-	arr[Mesh.ARRAY_COLOR] = cols
-	arr[Mesh.ARRAY_NORMAL] = null
-	arr[Mesh.ARRAY_TANGENT] = null
-	var am := ArrayMesh.new()
-	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+	n.frequency = 1.6
+	var r := RandomNumberGenerator.new()
+	r.seed = 4711
 	var st := SurfaceTool.new()
-	st.create_from(am, 0)
-	st.deindex()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var lobes := 6
+	for l in lobes:
+		var sm := SphereMesh.new()
+		var rad := r.randf_range(0.45, 0.75)
+		sm.radius = rad
+		sm.height = rad * 2.0
+		sm.radial_segments = 9
+		sm.rings = 5
+		var arr := sm.get_mesh_arrays()
+		var verts: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+		var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+		var ang := TAU * float(l) / float(lobes) + r.randf() * 0.6
+		var off := Vector3(cos(ang) * r.randf_range(0.2, 0.6), r.randf_range(0.0, 0.5), sin(ang) * r.randf_range(0.2, 0.6))
+		if l == 0:
+			off = Vector3(0, 0.45, 0)
+		var tint := r.randf()
+		for i in verts.size():
+			var v := verts[i]
+			v *= 1.0 + n.get_noise_3dv(v * 3.0 + off * 5.0) * 0.55
+			v += off
+			if v.y < 0.0:
+				v.y *= 0.25
+			verts[i] = v
+		for k in idx.size():
+			st.set_color(Color(tint, 1, 0))
+			st.add_vertex(verts[idx[k]])
 	st.generate_normals()
 	return st.commit()
 
 func _build_light(sun_angles) -> void:
 	sun = DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(sun_angles[0], sun_angles[1], 0)
+	RenderingServer.global_shader_parameter_set("g_sun_dir", Basis.from_euler(sun.rotation).z.normalized())
 	sun.light_energy = 1.35
 	sun.light_color = Color(1.0, 0.97, 0.9)
 	sun.shadow_enabled = true
