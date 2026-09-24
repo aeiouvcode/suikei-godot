@@ -46,7 +46,8 @@ void fragment() {
 	float fin = COLOR.r; // 1 on fins
 	float up = cos(around * 6.2831853);
 	vec3 col = mix(belly_color, side_color, smoothstep(-0.7, 0.1, up));
-	col = mix(col, back_color, smoothstep(0.2, 0.85, up));
+	// seen from the bank the dorsal view dominates: a dark olive back with a thin silver flank edge
+	col = mix(col, back_color, smoothstep(-0.1, 0.6, up));
 	vec2 sp = vec2(t * 7.0, around * 5.0);
 	// parr marks: vertical ovals along lateral line
 	float pm = smoothstep(0.35, 0.1, abs(fract(t * 9.0 + 0.2) - 0.5)) * smoothstep(0.75, 0.2, abs(up)) * smoothstep(0.12, 0.25, t) * smoothstep(0.85, 0.7, t);
