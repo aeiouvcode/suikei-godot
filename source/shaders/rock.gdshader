@@ -2,7 +2,7 @@ shader_type spatial;
 render_mode diffuse_burley, specular_schlick_ggx;
 #include "res://shaders/underwater.gdshaderinc"
 uniform sampler2D rock_noise : filter_linear_mipmap, repeat_enable;
-uniform vec3 granite : source_color = vec3(0.52, 0.52, 0.50);
+uniform vec3 granite : source_color = vec3(0.42, 0.42, 0.40);
 uniform vec3 moss : source_color = vec3(0.13, 0.18, 0.07);
 uniform float moss_amount = 0.6;
 uniform float seed = 0.0;
@@ -30,9 +30,17 @@ void fragment() {
 	if (depth <= 0.0) {
 		float h = -depth;
 		float up = smoothstep(0.35, 0.85, wn.y);
-		float m = up * smoothstep(0.08, 0.3, h) * smoothstep(0.35, 0.6, big + fine * 0.4) * moss_amount * 1.6;
-		vec3 mc = moss * (0.7 + 0.6 * fine);
-		col = mix(col, mc, clamp(m, 0.0, 1.0));
+		float up2 = smoothstep(0.1, 0.8, wn.y);
+		float edge = big + fine * 0.45 + (speck - 0.5) * 0.35;
+		float m = up2 * smoothstep(0.05, 0.25, h) * smoothstep(0.38, 0.52, edge) * moss_amount * 1.8;
+		m = clamp(m, 0.0, 1.0);
+		float tuft = tri(p, wn, 9.0).r;
+		vec3 mc = mix(moss * 0.55, moss * vec3(1.6, 1.55, 0.9), smoothstep(0.35, 0.75, tuft));
+		mc *= 0.75 + 0.5 * fine;
+		col = mix(col, mc, m);
+		float lich = smoothstep(0.62, 0.7, tri(p, wn, 0.9).g) * (1.0 - m);
+		col = mix(col, vec3(0.55, 0.58, 0.48), lich * 0.45);
+		if (m > 0.05) { NORMAL = normalize(NORMAL + (vec3(tuft, speck, fine) - 0.5) * 0.6 * m); }
 		float wet = 1.0 - smoothstep(0.0, 0.15, h);
 		col = mix(col, col * 0.5, wet);
 		rough = mix(0.85, 0.3, wet);
@@ -42,8 +50,8 @@ void fragment() {
 		vec3 insc;
 		vec3 T = view_transmit(wp, CAMERA_POSITION_WORLD, insc);
 		vec3 c = caustics_rgb(wp.xz + wp.y * 0.3, depth, t) * smoothstep(-0.2, 0.6, wn.y);
-		ALBEDO = col * T * (0.72 + c);
-		EMISSION = insc * 0.55;
+		ALBEDO = col * T * (0.68 + c * 0.95);
+		EMISSION = insc * 0.8;
 		rough = 0.6;
 	}
 	ROUGHNESS = rough;
