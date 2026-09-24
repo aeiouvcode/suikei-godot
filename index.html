@@ -96,14 +96,16 @@ body {
 		</div>
 
 		<script>
-/* index.wasm is stored in 4 parts (GitHub API upload size); stitch them back on fetch. */
+/* index.wasm is stored in 4 parts and index.pck as 8 base64 text parts (web-editor deploy); both are stitched back on fetch. */
 (function(){const of=window.fetch.bind(window);window.fetch=function(u,i){const s=(typeof u==='string')?u:(u&&u.url)||'';
 if(/index\.wasm(\?|$)/.test(s)){return Promise.all([0,1,2,3].map(n=>of('index.wasm.part'+n,i).then(r=>{if(!r.ok)throw new Error('wasm part '+n+' '+r.status);return r.arrayBuffer();})))
-.then(bs=>new Response(new Blob(bs),{status:200,headers:{'Content-Type':'application/wasm'}}));}return of(u,i);};})();
+.then(bs=>new Response(new Blob(bs),{status:200,headers:{'Content-Type':'application/wasm'}}));}if(/index\.pck(\?|$)/.test(s)){return Promise.all([0,1,2,3,4,5,6,7].map(n=>of('index.pck.b64.part'+n,i).then(r=>{if(!r.ok)throw new Error('pck part '+n+' '+r.status);return r.text();})))
+.then(ts=>{const b=atob(ts.join('').replace(/\s+/g,''));const a=new Uint8Array(b.length);for(let k=0;k<b.length;k++)a[k]=b.charCodeAt(k);return new Response(new Blob([a]),{status:200,headers:{'Content-Type':'application/octet-stream'}});});}
+return of(u,i);};})();
 </script>
 <script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":4730880,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":4734240,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -202,4 +204,3 @@ const engine = new Engine(GODOT_CONFIG);
 		</script>
 	</body>
 </html>
-
