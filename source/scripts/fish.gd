@@ -6,7 +6,7 @@ enum S { WANDER, HOLD, NOTICE, INSPECT, NIBBLE, BITE, HOOKED, LANDED, FLEE }
 
 const FISH_SHADER := preload("res://shaders/fish.gdshader")
 const SHADOW_SHADER := preload("res://shaders/fishshadow.gdshader")
-const VIS_SCALE := 2.2
+const VIS_SCALE := 2.9
 var shadow: MeshInstance3D
 
 var sp_id := ""
@@ -58,7 +58,7 @@ func setup(id: String, data: Dictionary, size_cm: float, w, seed_i: int) -> void
 	shadow = MeshInstance3D.new()
 	var q := QuadMesh.new()
 	q.orientation = PlaneMesh.FACE_Y
-	q.size = Vector2(s * 0.42, s * 1.15)
+	q.size = Vector2(s * 0.5, s * 1.25)
 	shadow.mesh = q
 	var sm := ShaderMaterial.new()
 	sm.shader = SHADOW_SHADER
