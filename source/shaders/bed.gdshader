@@ -16,7 +16,9 @@ void fragment() {
 	float depth = g_water_y - wp.y;
 	vec2 uv = wp.xz * tile;
 	if (depth > 0.0) {
-		uv += water_slope(wp.xz, t) * 0.035 * clamp(depth, 0.0, 2.0);
+		// refraction wobble: large slow swell plus the fine ripple, scaled by depth
+		vec2 sw = water_slope(wp.xz * 0.45, t * 0.7);
+		uv += (water_slope(wp.xz, t) * 0.03 + sw * 0.06) * clamp(depth, 0.0, 2.0);
 	}
 	vec3 alb = texture(albedo_tex, uv).rgb;
 	vec3 alb2 = texture(albedo_tex, uv * 0.37 + vec2(0.3, 0.7)).rgb;
@@ -40,12 +42,14 @@ void fragment() {
 	} else {
 		// underwater: soft algae film + optics
 		alb = mix(alb, alb * vec3(0.8, 0.9, 0.62), 0.25 * smoothstep(0.3, 0.7, texture(detail_noise, wp.xz * 0.13).r));
-		alb = mix(alb, vec3(0.5, 0.49, 0.45), clamp(depth * 0.3, 0.0, 0.45));
+		// clear granite-stream bed: pale, low-contrast pebbles (light-coloured bed reads as clear water)
+		float lum = dot(alb, vec3(0.333));
+		alb = mix(alb, vec3(0.72, 0.78, 0.72) * (0.7 + 0.6 * lum), 0.45);
 		vec3 insc;
 		vec3 T = view_transmit(wp, CAMERA_POSITION_WORLD, insc);
 		vec3 c = caustics_rgb(wp.xz, depth, t);
-		ALBEDO = alb * T * (0.72 + c);
-		EMISSION = insc * 0.55;
+		ALBEDO = alb * T * (0.68 + c * 0.95);
+		EMISSION = insc * 0.8;
 		rough = 0.7;
 	}
 	NORMAL_MAP = n;
